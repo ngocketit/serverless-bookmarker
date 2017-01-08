@@ -1,0 +1,34 @@
+{
+  "name": "bookmarker",
+  "version": "1.0.0",
+  "description": "Simple AWS Lambda to manage bookmarks",
+  "main": "bookmark.js",
+  "scripts": {
+    "test": "npm run build && mocha --compilers js:babel-core/register test/*.js --reporter spec",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "Phi Van Ngoc",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.7.21",
+    "bluebird": "^3.4.7",
+    "es6-promise": "4.0.5",
+    "es6-promisify-all": "^0.1.0",
+    "joi": "^10.1.0",
+    "lodash": "^4.17.4",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "latest",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "chai": "^3.5.0",
+    "decache": "^4.1.0",
+    "json-loader": "^0.5.4",
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.7",
+    "webpack": "^1.14.0",
+    "webpack-glob-entries": "^1.0.1"
+  }
+}

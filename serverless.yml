@@ -1,0 +1,186 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: bookmarker # NOTE: update this with your service name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+custom:
+  s3_screenshot_bucket: screenshot-bucket-2
+  table_bookmark_list: bookmark_list
+  table_bookmark_group: bookmark_group
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev
+  region: us-east-1
+  apiKeys:
+    - ${self:provider.stage}-bookmarker-api-key
+
+# you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ScreenshotBucket" } ] ]  }
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource: arn:aws:dynamodb:*:*:table/${self:custom.table_bookmark_group}
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource: arn:aws:dynamodb:*:*:table/${self:custom.table_bookmark_list}
+
+# you can define service wide environment variables here
+#  environment:
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  create_group:
+    handler: dist/group.create_group
+    events:
+      - http:
+          path: groups/create
+          method: post
+  update_group:
+    handler: dist/group.update_group
+    events:
+      - http:
+          path: groups/update
+          method: post
+          private: true
+  remove_group:
+    handler: dist/group.remove_group
+    events:
+      - http:
+          path: groups/delete/{id}
+          method: get
+          private: true
+  list_group:
+    handler: dist/group.list_group
+    events:
+      - http:
+          path: groups
+          method: get
+          private: true
+  get_group:
+    handler: dist/group.get_group
+    events:
+      - http:
+          path: groups/group/{id}
+          method: get
+          private: true
+  add_bookmark:
+    handler: dist/bookmark.add_bookmark
+    events:
+      - http:
+          path: bookmarks/create
+          method: post
+          private: true
+  update_bookmark:
+    handler: dist/bookmark.update_bookmark
+    events:
+      - http:
+          path: bookmarks/update
+          method: post
+          private: true
+  remove_bookmark:
+    handler: dist/bookmark.remove_bookmark
+    events:
+      - http:
+          path: bookmarks/remove/{id}
+          method: get
+          private: true
+  list_bookmark:
+    handler: dist/bookmark.list_bookmark
+    events:
+      - http:
+          path: bookmarks
+          method: get
+          private: true
+  get_bookmark:
+    handler: dist/bookmark.get_bookmark
+    events:
+      - http:
+          path: bookmarks/bookmark/{id}
+          method: get
+          private: true
+
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+#    events:
+#      - http:
+#          path: users/create
+#          method: get
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    ScreenshotBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3_screenshot_bucket}
+
+    BookmarkList:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.table_bookmark_list}
+        AttributeDefinitions:
+          -
+            AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          -
+            AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    BookmarkGroup:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.table_bookmark_group}
+        AttributeDefinitions:
+          -
+            AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          -
+            AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
