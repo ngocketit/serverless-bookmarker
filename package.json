@@ -4,7 +4,7 @@
   "description": "Simple AWS Lambda to manage bookmarks",
   "main": "bookmark.js",
   "scripts": {
-    "test": "npm run build && mocha --compilers js:babel-core/register test/*.js --reporter spec",
+    "test": "npm run build && mocha --compilers js:babel-core/register test/*.test.js --reporter spec",
     "build": "webpack --config webpack.config.js"
   },
   "author": "Phi Van Ngoc",
