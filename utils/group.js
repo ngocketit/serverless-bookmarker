@@ -104,43 +104,48 @@ export function list_group(params) {
 }
 
 export function get_group(params) {
-  const schema = {
-    id: Joi.string().required
-  };
+  return new Promise((resolve, reject) => {
+    const schema = {
+      id: Joi.string().required()
+    };
 
-  const valid = validateRequestParams(schema, params);
-  if (valid.error) {
-    reject(valid.error);
-    return;
-  }
+    const valid = validateRequestParams(schema, params);
 
-  const docClient = initDocClient();
+    if (valid.error) {
+      reject(valid.error);
+      return;
+    }
 
-  resolve(docClient.get({
-    TableName: GROUP_TABLE,
-    Key: {
-      id: params.id
-    },
-  }).promise());
+    const docClient = initDocClient();
+
+    resolve(docClient.get({
+      TableName: GROUP_TABLE,
+      Key: {
+        id: params.id
+      },
+    }).promise());
+  });
 }
 
-export function delete_group(params) {
-  const schema = {
-    id: Joi.string().required
-  };
+export function remove_group(params) {
+  return new Promise((resolve, reject) => {
+    const schema = {
+      id: Joi.string().required()
+    };
 
-  const valid = validateRequestParams(schema, params);
-  if (valid.error) {
-    reject(valid.error);
-    return;
-  }
+    const valid = validateRequestParams(schema, params);
+    if (valid.error) {
+      reject(valid.error);
+      return;
+    }
 
-  const docClient = initDocClient();
+    const docClient = initDocClient();
 
-  resolve(docClient.delete({
-    TableName: GROUP_TABLE,
-    Key: {
-      id: params.id
-    },
-  }).promise());
+    resolve(docClient.delete({
+      TableName: GROUP_TABLE,
+      Key: {
+        id: params.id
+      },
+    }).promise());
+  });
 }
